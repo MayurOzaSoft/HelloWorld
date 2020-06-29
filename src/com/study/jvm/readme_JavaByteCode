@@ -1,0 +1,119 @@
+-------------------------------------------------------------
+public class JvmCompilation {
+
+    int i = 5;
+    public int simpleField = 100; // flagged as ACC_PUBLIC
+    public native int simpleFieldNative(int number); // flagged as ACC_PUBLIC
+    public final int simpleFieldFinal = 100; // flagged as ACC_FINAL
+
+    public void demo(){
+        System.out.println("Inside Demo Method");
+    }
+}
+-------------------------------------------------------------
+This can be converted as >>
+0: bipush 5
+2: istore_0
+
+public int simpleField;
+         signature: I
+         flags: ACC_PUBLIC
+
+public final int simpleFieldFinal = 100;
+        signature: I
+        flags: ACC_PUBLIC, ACC_FINAL
+        ConstantValue: int 100
+-------------------------------------------------------------
+ javap >> called as Java Disassembler >> Used to get information of class or interface
+ -------------------------------------------------------------
+ e.g.
+ syntax : javap [ Options ] classes
+ -------------------------------------------------------------
+ 
+ >> javap JvmCompilation.class
+ >> Output :
+
+ Compiled from "JvmCompilation.java"
+ public class com.study.jvm.JvmCompilation {
+   int i;
+   public int simpleField;
+   public final int simpleFieldFinal;
+   public com.study.jvm.JvmCompilation();
+   public void demo();
+ }
+
+ -------------------------------------------------------------
+ 
+ >> javap -c JvmCompilation.class
+ >> Output :
+ -------------------------------------------------------------
+ 
+ public class com.study.jvm.JvmCompilation {
+   int i;
+ 
+   public int simpleField;
+ 
+   public final int simpleFieldFinal;
+ 
+   public com.study.jvm.JvmCompilation();
+     Code:
+        0: aload_0
+        1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+        4: aload_0
+        5: iconst_5
+        6: putfield      #2                  // Field i:I
+        9: aload_0
+       10: bipush        100
+       12: putfield      #3                  // Field simpleField:I
+       15: aload_0
+       16: bipush        100
+       18: putfield      #4                  // Field simpleFieldFinal:I
+       21: return
+ 
+   public void demo();
+     Code:
+        0: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        3: ldc           #6                  // String Inside Demo Method
+        5: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        8: return
+ }
+ 
+ -------------------------------------------------------------
+ 
+ >> javap -verbose <classname>
+     - Prints stack size, number of locals and args for methods
+ 
+ -------------------------------------------------------------
+ >> Java Compatibility with C
+ >> javah
+      - This javah produces C header files and C source files from a Java class. These files provide the connective glue that allow your Java and C code to interact.
+ 
+ >> javac <classname> -h .
+ -------------------------------------------------------------
+ 
+ Generated File in Destination as "com_study_jvm_JvmCompilation.h"
+ 
+ >> Java Debugger
+ >> jdb
+      - The Java Debugger, jdb, is a simple command-line debugger for Java classes. It is a demonstration of the Java Platform Debugger Architecture that provides inspection and debugging of a local or remote Java Virtual Machine.
+ 
+ -------------------------------------------------------------
+
+              Components                          Debugger Interfaces
+ 
+                 /    |--------------|
+                /     |     VM       |
+  debuggee ----(      |--------------|  <------- JVM TI - Java VM Tool Interface
+                \     |   back-end   |
+                 \    |--------------|
+                 /           |
+  comm channel -(            |  <--------------- JDWP - Java Debug Wire Protocol
+                 \           |
+                      |--------------|
+                      | front-end    |
+                      |--------------|  <------- JDI - Java Debug Interface
+                      |      UI      |
+                      |--------------|
+ 
+ -------------------------------------------------------------
+ 
